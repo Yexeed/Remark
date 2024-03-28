@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DiamondStrider1\Remark\Command;
 
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 
 /**
@@ -12,7 +13,7 @@ use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
  */
 final class OverloadMap
 {
-    /** @var CommandParameter[][] */
+    /** @var CommandOverload[] */
     private array $overloads = [];
     private string $usage = '';
 
@@ -35,9 +36,9 @@ final class OverloadMap
             $this->usage .= "$subNamesString ";
         }
 
-        $overload = [];
+        $parameters = [];
         foreach ($subNames as $index => $subName) {
-            $overload[] = CommandParameter::enum(
+            $parameters[] = CommandParameter::enum(
                 $subName,
                 new CommandEnum("param-$index-$subName", [$subName]),
                 CommandParameter::FLAG_FORCE_COLLAPSE_ENUM,
@@ -51,11 +52,11 @@ final class OverloadMap
             }
             $parameter = $arg->toCommandParameter($name);
             if (null !== $parameter) {
-                $overload[] = $parameter;
+                $parameters[] = $parameter;
             }
         }
         $this->usage = rtrim($this->usage);
-        $this->overloads[] = $overload;
+        $this->overloads[] = new CommandOverload(false, $parameters);
     }
 
     /**
