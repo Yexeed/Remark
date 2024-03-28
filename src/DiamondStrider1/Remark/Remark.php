@@ -26,6 +26,20 @@ use ReflectionClass;
  */
 final class Remark
 {
+    private static bool $registered = false;
+
+    /**
+     * Registers a packet listener to give command tab-completion to players.
+     */
+    public static function activate(Plugin $plugin): void
+    {
+        if(!self::$registered){
+            $pm = Server::getInstance()->getPluginManager();
+            $pm->registerEvents(new CommandHintListener(), $plugin);
+            self::$registered = true;
+        }
+    }
+
     /**
      * Binds a handler's methods to a command map, by default
      * using the command map attached to the singleton Server instance.
@@ -92,14 +106,5 @@ final class Remark
         }
 
         $cm->registerAll(mb_strtolower($plugin->getName()), $boundCommands);
-    }
-
-    /**
-     * Registers a packet listener to give command tab-completion to players.
-     */
-    public static function activate(Plugin $plugin): void
-    {
-        $pm = Server::getInstance()->getPluginManager();
-        $pm->registerEvents(new CommandHintListener(), $plugin);
     }
 }
